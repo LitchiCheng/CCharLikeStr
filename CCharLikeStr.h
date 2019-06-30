@@ -4,37 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
-/* 
-函数名称 	功能
-构造函数 	产生或复制字符串
-析构函数 	销毁字符串
-=，assign 	赋以新值
-Swap 	交换两个字符串的内容
-+ =，append( )，push_back() 	添加字符
-insert () 	插入字符
-erase() 	删除字符
-clear () 	移除全部字符
-resize () 	改变字符数量
-replace() 	替换字符
-+ 	串联字符串
-==，！ =，<，<=，>，>=，compare() 	比较字符串内容
-size()，length() 	返回字符数量
-max_size () 	返回字符的最大可能个数
-empty () 	判断字符串是否为空
-capacity () 	返回重新分配之前的字符容量
-reserve() 	保留内存以存储一定数量的字符
-[],at() 	存取单一字符
->>，getline() 	从 stream 中读取某值
-<< 	将值写入 stream
-copy() 	将内容复制为一个 C - string
-c_str() 	将内容以 C - string 形式返回
-data() 	将内容以字符数组形式返回
-substr() 	返回子字符串
-find() 	搜寻某子字符串或字符
-begin( )，end() 	提供正向迭代器支持
-rbegin()，rend() 	提供逆向迭代器支持
-get_allocator() 	返回配置器
-*/
+
 #define  CHAR_MAX_LENGTH    150
 
 class CCharLikeStr
@@ -44,13 +14,18 @@ private:
 public:
     CCharLikeStr();
     ~CCharLikeStr();
-    void operator=(char* equal_data);
-    void operator+(char* add_data);
+    CCharLikeStr operator=(char* equal_data);
+    CCharLikeStr operator+(char* add_data);
     void append(char* append_data);
+    void push_back(char* append_data){append(append_data);}
     uint16_t size();
+    uint16_t length(){return size();}
     bool empty();
-    void find();
+    void clear(){memset(_char_arrary,0x00,CHAR_MAX_LENGTH);}
+    bool find(char* find_data);
     char* c_str();
+    void erase(char* erase_data);
+    void insert(char* insert_data, uint8_t postion);
 };
 
 CCharLikeStr::CCharLikeStr()
@@ -86,17 +61,43 @@ bool CCharLikeStr::empty(){
     return (strlen(_char_arrary) > 0) ? true : false; 
 }
 
-void CCharLikeStr::operator=(char* equal_data){
+CCharLikeStr CCharLikeStr::operator=(char* equal_data){
     uint16_t equal_data_length = strlen(equal_data);
     memset(_char_arrary,0x00,CHAR_MAX_LENGTH);
     memcpy(_char_arrary,equal_data,equal_data_length);
 }
 
-void CCharLikeStr::operator+(char* add_data){
+CCharLikeStr CCharLikeStr::operator+(char* add_data){
     uint16_t char_length_now = strlen(_char_arrary);
     uint16_t add_data_length = strlen(add_data);
     memcpy(_char_arrary+char_length_now,add_data,add_data_length);
 }
 
+bool CCharLikeStr::find(char* find_data){
+    uint8_t index = 0;
+    uint8_t cpy_size = strlen(find_data);
+    uint8_t char_length_now = strlen(_char_arrary);
+    uint8_t size_diff = char_length_now - cpy_size;
+    if(size_diff < 0){
+        return false;
+    }
+    char* temp_data = new char[cpy_size+1];
+    temp_data[cpy_size] = '\0';
+    for(int i=0;i<size_diff;i++){
+        memcpy(temp_data,_char_arrary + i,cpy_size);
+        if(strcmp(temp_data,find_data) == 0){
+            delete []temp_data;
+            return true;
+        }    
+    }
+    delete []temp_data;
+    return false;
+}
+
+void CCharLikeStr::erase(char* erase_data){
+    if(find(erase_data)){
+        
+    }
+}
 
 #endif //_C_CHAR_LIKE_STR_H_
